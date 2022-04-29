@@ -49,8 +49,9 @@ public class FamilyTree
             // No, recurse. Check all children of this node.
             for (TreeNode child: children)
             {
-            	if(child.getNodeWithName(targetName)!=null) {
-            		return child;
+            	TreeNode targetNode = child.getNodeWithName(targetName);
+            	if(targetNode !=null) {
+            		return targetNode;
             	}
                 // If child.getNodeWithName(targetName) returns a non-null node,
                 // then that's the node we're looking for. Return it.
@@ -66,8 +67,8 @@ public class FamilyTree
         ArrayList<TreeNode> collectAncestorsToList()
         {
             ArrayList<TreeNode> ancestors = new ArrayList<>();
-            while(this!=null) {
-            	TreeNode current = this;
+            TreeNode current = this;
+            while(current!=null) {
             	ancestors.add(current.parent);
             	current = current.parent;
             }
@@ -140,13 +141,11 @@ public class FamilyTree
 		if (colonIndex < 0)
 			throw new TreeException("cant find colon");
 			//?? throw a TreeException with a useful message
-		String parent = 
+		String parent = line.substring(0,colonIndex);
 				//?? The substring of line that starts at char #0 and ends just before colonIndex. Check the API for 
 				           //class java.util.String, method substring(), if you need guidance.
-		String childrenString = ?? The substring of line that starts just after colonIndex and goes through the end of
-				                   the line. You'll use a different version of substring().
-		String[] childrenArray = ?? Call childrenString.split(). Check the API for details. The result will be an array
-				                    of strings, with the separating commas thrown away.
+		String childrenString = line.substring(colonIndex + 1);
+		String[] childrenArray = childrenString.split(",");
 		
 		// Find parent node. If root is null then the tree is empty and the
 		// parent node must be constructed. Otherwise the parent node should be 
@@ -156,13 +155,18 @@ public class FamilyTree
 			parentNode = root = new TreeNode(parent);
 		else
 		{
-			parentNode = root.?????  There's a method in Node that searches for a named node. 
-			??? If the parent node wasn't found, there must have been something wrong in the 
-				data file. Throw an exception.
+			parentNode = root.getNodeWithName(parent);
+			if(parentNode == null)
+			{
+				throw new TreeException("can't find parent node");
+			}
 		}
 		
 		// Add child nodes to parentNode.
-		?? For each name in childrenArray, create a new node and add that node to parentNode.
+		for(String child : childrenArray)
+		{
+			parentNode.addChild(new TreeNode(child));
+		}
 	}
 	
 	
